@@ -1,0 +1,30 @@
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - deploy-staging
+
+jobs:
+  deploy:
+    name: Shopify theme management
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
+
+      - name: Shopify theme management
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+          git reset origin/staging -- config/settings_data.json
+          git reset origin/staging -- assets/zifyapp-fblogin.js
+          git reset origin/staging -- templates/*.json
+          git reset origin/staging -- assets/algolia_config.js
+          git reset origin/staging -- assets/algolia_config.js.liquid
+          git commit -m "bot commit sync file"
+          git checkout staging
+          git merge --no-ff deploy-staging
+          git push
+          
